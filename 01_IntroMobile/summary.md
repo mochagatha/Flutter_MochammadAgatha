@@ -1,6 +1,6 @@
 ## IntroMobile
-- software adalah perangkaat lunak yang tersimpan dan dapat dikendalikan pada sistem komputer
-- jenis-jenis software antara lain Web, Desktop, Mobile
+- software adalah perangkaat lunak yang tersimpan dan dapat dikendalikan pada sistem komputer.
+- jenis-jenis software antara lain Web, Desktop, Mobile.
 - Bahasa pemrograman adalah rangkaian text yang digunakan untuk memberi perintah kepada komputer.
 - Compailer dan Interpreter Software yang digunakan untuk membaca perintah bahasa pemrograman.
 - Ada banyak bahasa pemrograman untuk melakukan pengembangan aplikasi mobile diantara lain Dart, Java, Swift, Objective-C, dan masih banyak lagi. 
