@@ -13,7 +13,7 @@ void main() {
   int r = int.parse(stdin.readLineSync()!);
   print("Masukkan Tinggi dari Tabung:");
   int t = int.parse(stdin.readLineSync()!);
-  var rumus = pi * (r * r) * t;
+  double rumus = pi * (r * r) * t;
 
   print("Volume Tabung = $rumus");
 }
