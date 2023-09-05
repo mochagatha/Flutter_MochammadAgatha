@@ -6,9 +6,9 @@ import 'package:flutter_mochammadagatha/prioritas2/cupertio_page.dart';
 
 void main() {
   runApp(
-      // const AppMaterial()
+      const AppMaterial()
       // const AppCupertino()
-      const AppEksplorasi()
+      // const AppEksplorasi()
       );
 }
 

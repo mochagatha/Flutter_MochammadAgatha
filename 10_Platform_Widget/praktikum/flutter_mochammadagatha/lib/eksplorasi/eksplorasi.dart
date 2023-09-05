@@ -124,7 +124,7 @@ class eksplorasi extends StatelessWidget {
                 ),
                 label: 'Search'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.warning_amber_outlined), label: 'Information'),
+                icon: Icon(Icons.error), label: 'Information'),
           ]),
     );
   }
