@@ -8,83 +8,46 @@ class eksplorasi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<List<dynamic>> dataList = [
+      ['Learn flutter'],
+      ['Learn ReactJS'],
+      ['Learn VueJS'],
+      ['Learn Tailwind CSS'],
+      ['Learn UI/UX'],
+      ['Learn Figma'],
+      ['Learn Digital Marketing'],
+    ];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF6200EE),
-        title: const Text("My Flutter App"),
+        title: Text(
+          "My Flutter App",
+          style: GoogleFonts.roboto(
+            fontSize: 25,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search,
-            color: Colors.grey,
+            icon: const Icon(
+              Icons.search,
+              color: Colors.grey,
             ),
             onPressed: () {},
           )
         ],
       ),
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+      body: ListView.builder(
+        itemCount: dataList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Learn flutter",
-                  style: GoogleFonts.roboto(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const Divider(thickness: 1),
-                Text(
-                  "Learn ReactJS",
-                  style: GoogleFonts.roboto(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  "Learn VueJS",
-                  style: GoogleFonts.roboto(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const Divider(thickness: 1),
-                Text(
-                  "Learn Tailwind CSS",
-                  style: GoogleFonts.roboto(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const Divider(thickness: 1),
-                const SizedBox(
-                  height: 15,
-                ),
-                Text(
-                  "Learn UI/UX",
-                  style: GoogleFonts.roboto(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const Divider(thickness: 1),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "Learn Figma",
-                  style: GoogleFonts.roboto(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const Divider(thickness: 1),
-                Text(
-                  "Learn Digital Marketing",
+                  "${dataList[index][0]}",
                   style: GoogleFonts.roboto(
                     fontSize: 20,
                     fontWeight: FontWeight.w400,
@@ -93,16 +56,15 @@ class eksplorasi extends StatelessWidget {
                 const Divider(thickness: 1),
               ],
             ),
-          )
-        ],
+          );
+        },
       ),
-        floatingActionButton: Positioned(
+      floatingActionButton: Positioned(
         bottom: 16,
         right: 16,
         child: FloatingActionButton(
           onPressed: () {},
-          child: const Icon(Icons.add,
-          color: Colors.black),
+          child: const Icon(Icons.add, color: Colors.black),
           backgroundColor: const Color(0xFF03DAC5),
         ),
       ),
