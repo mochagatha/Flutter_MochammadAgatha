@@ -14,7 +14,6 @@ class HomePage extends StatelessWidget {
       ['Chelsey Dietrich', 'C', '(254)954-1289'],
       ['Mrs. Dennis Schulist', 'M', '1-477-935-8478 x6430'],
       ['Kurtis Weissnat', 'K', '210.067.6132'],
-
       ['Leanne Graham', 'L', '1-770-736-8031 x56442'],
       ['Ervin Howell', 'E', '010-692-6593 x09125'],
       ['Clementine Bauch', 'C', '1-463-123-4447'],
