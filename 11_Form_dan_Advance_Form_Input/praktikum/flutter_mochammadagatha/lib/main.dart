@@ -3,12 +3,12 @@ import 'package:flutter_mochammadagatha/view/create_new_contacts.dart';
 
 void main() {
   runApp(
-      const AppMaterial()
+      const MyApp()
       );
 }
 
-class AppMaterial extends StatelessWidget {
-  const AppMaterial({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

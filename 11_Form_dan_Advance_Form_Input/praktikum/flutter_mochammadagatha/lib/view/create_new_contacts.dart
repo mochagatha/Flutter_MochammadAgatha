@@ -1,6 +1,7 @@
-// ignore_for_file: camel_case_types, prefer_typing_uninitialized_variables, unnecessary_string_interpolations, prefer_interpolation_to_compose_strings, non_constant_identifier_names, depend_on_referenced_packages, unnecessary_null_comparison
+// ignore_for_file: camel_case_types, prefer_typing_uninitialized_variables, unnecessary_string_interpolations, prefer_interpolation_to_compose_strings, non_constant_identifier_names, depend_on_referenced_packages, unnecessary_null_comparison, avoid_types_as_parameter_names, avoid_print, body_might_complete_normally_nullable, unused_local_variable
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -20,14 +21,55 @@ class _createNewContactsState extends State<createNewContacts> {
   ];
   TextEditingController nameController = TextEditingController();
   TextEditingController nomorController = TextEditingController();
+
   String editedName = '';
   String editedNomor = '';
   bool isEditing = false;
   DateTime _dueDate = DateTime.now();
   final currentDate = DateTime.now();
   Color _currentColor = const Color(0xFF6750A4);
-  String selectedFileName = "Pick your File";
+  String selectedFileName = "Pick Your File";
   String? filePath;
+
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  String? validateName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Nama wajib diisi';
+    }
+    List<String> words = value.split(' ');
+    bool isValid = true;
+
+    for (String word in words) {
+      if (!RegExp(r'^[A-Z][a-z]*$').hasMatch(word)) {
+        isValid = false;
+        return 'Nama boleh tidak mengandung angka atau karakter khusus.';
+      }
+    }
+    if (words.length < 2 || !isValid) {
+      return 'Nama harus terdiri dari minimal 2 kata';
+    }
+
+    return null;
+  }
+
+  String? validateNomor(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Nomor wajib diisi';
+    }
+
+    if (value.length < 8) {
+      return 'Nomor harus terdiri dari minimal 8 angka';
+    }
+
+    if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+      return 'Nomor hanya boleh angka';
+    }
+    if (!value.startsWith('0')) {
+      return 'Nomor harus diawali 0';
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,52 +130,63 @@ class _createNewContactsState extends State<createNewContacts> {
   }
 
   Widget TextFieldUser() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        TextFormField(
-          controller: nameController,
-          decoration: const InputDecoration(
-            labelText: 'Name',
-            hintText: 'Insert your name',
-            labelStyle: TextStyle(
-              color: Colors.blueGrey,
-            ),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.blueGrey,
+    return Form(
+        key: formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            TextFormField(
+              controller: nameController,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                labelText: 'Name',
+                hintText: 'Insert Your Name',
+                labelStyle: TextStyle(
+                  color: Colors.blueGrey,
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.blueGrey,
+                  ),
+                ),
+                filled: true,
+                fillColor: Color(0xFFE7E0EC),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
+              validator: validateName,
+              onChanged: (value) {},
             ),
-            filled: true,
-            fillColor: Color(0xFFE7E0EC),
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-          ),
-          onChanged: (value) {},
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        TextFormField(
-          controller: nomorController,
-          decoration: const InputDecoration(
-            labelText: 'Nomor',
-            hintText: '+62...',
-            labelStyle: TextStyle(
-              color: Colors.blueGrey,
+            const SizedBox(
+              height: 10,
             ),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.blueGrey,
-              ),
-            ),
-            filled: true,
-            fillColor: Color(0xFFE7E0EC),
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-          ),
-          onChanged: (value) {},
-        ),
-      ],
-    );
+            Column(
+              children: [
+                TextFormField(
+                    controller: nomorController,
+                    keyboardType: TextInputType.phone,
+                    maxLength: 15,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: const InputDecoration(
+                      labelText: 'Nomor',
+                      hintText: '+62...',
+                      labelStyle: TextStyle(
+                        color: Colors.blueGrey,
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.blueGrey,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Color(0xFFE7E0EC),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                    ),
+                    onChanged: (value) {},
+                    validator: validateNomor),
+              ],
+            )
+          ],
+        ));
   }
 
   Widget Button() {
@@ -149,122 +202,79 @@ class _createNewContactsState extends State<createNewContacts> {
           ),
           onPressed: () {
             setState(() {
-              String name = nameController.text;
-              String nomor = nomorController.text;
-              String date = DateFormat('dd-MM-yyyy').format(_dueDate);
-              String color = _currentColor.value.toRadixString(16);
-              String file = selectedFileName;
+              if (formKey.currentState!.validate()) {
+                String name = nameController.text;
+                String nomor = nomorController.text;
+                String date = DateFormat('EEEE-MM-yyyy').format(_dueDate);
+                String color = _currentColor.value.toRadixString(16);
+                String file = selectedFileName;
 
-              List<String> words = name.split(' ');
-              bool isValid = true;
-              for (String word in words) {
-                if (!RegExp(r'^[A-Z][a-z]*$').hasMatch(word)) {
-                  isValid = false;
-                  break;
-                }
-              }
+                //Mode edit data Nama & Nomor
+                if (isEditing) {
+                  // mencari indeks yang akan diedit
+                  int itemIndex = dataList.indexWhere((item) =>
+                      item[0] == editedName && item[2] == editedNomor);
 
-              if (words.length != 2 || !isValid) {
-                // Menampilkan pesan kesalahan jika nama tidak sesuai
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                        "Nama harus terdiri dari dua kata dan Setiap kata harus dimulai dengan huruf kapital."),
-                  ),
-                );
-                return;
-              }
+                  // Memeriksa apakah index yang akan di edit di temukan
+                  if (itemIndex >= 0) {
+                    dataList[itemIndex][0] = name;
+                    dataList[itemIndex][2] = nomor;
 
-              RegExp regex = RegExp(r'[0-9!$]');
-              if (regex.hasMatch(name)) {
-                // Jika nama mengandung angka atau karakter khusus, tampilkan Snackbar
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                        "Nama tidak boleh mengandung angka atau karakter khusus"),
-                  ),
-                );
-                return;
-              }
+                    // Memperbarui huruf pertama pada kata pertama
+                    String firstLetter = name.isNotEmpty ? name[0] : '';
+                    dataList[itemIndex][1] = firstLetter.toUpperCase();
 
-              RegExp nomorRegex = RegExp(r'^\d{8,15}$');
-              if (!nomorRegex.hasMatch(nomor)) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                        "Nomor harus berupa angka dan terdiri dari 8 hingga 15 angka."),
-                  ),
-                );
-                return;
-              }
-              if (!nomor.startsWith('0')) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text("Nomor harus diawali dengan '0'")),
-                );
-                return;
-              }
-              if (isEditing) {
-                // Jika dalam mode edit, perbarui item yang sedang diedit
-                int itemIndex = dataList.indexWhere(
-                    (item) => item[0] == editedName && item[2] == editedNomor);
-
-                if (itemIndex >= 0) {
-                  dataList[itemIndex][0] = name;
-                  dataList[itemIndex][2] = nomor;
-
-                  // Perbarui huruf pertama dari kata pertama di dataList
+                    // Keluar dari mode edit
+                    isEditing = false;
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Berhasil Diedit"),
+                    ),
+                  );
+                } else {
+                  // Mode Tambah data
                   String firstLetter = name.isNotEmpty ? name[0] : '';
-                  dataList[itemIndex][1] =
-                      firstLetter.toUpperCase(); // Perbarui huruf pertama
+                  dataList.add([
+                    name,
+                    firstLetter.toUpperCase(),
+                    nomor,
+                    date,
+                    color,
+                    file
+                  ]);
 
-                  isEditing = false; // Keluar dari mode edit
+                  // Menggabungkan data dari dataList menjadi map
+                  List<Map<String, dynamic>> newDataList = dataList.map((data) {
+                    return {
+                      'title': data[0],
+                      'subtitle': data[2],
+                      'date': data[3],
+                      'color': data[4],
+                      'file': data[5],
+                    };
+                  }).toList();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Contacts Berhasil Ditambahkan"),
+                    ),
+                  );
+                  print(newDataList);
                 }
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Berhasil Diedit"),
-                  ),
-                );
-              } else {
-                // Jika dalam mode tambah data baru, tambahkan item baru
-                String firstLetter = name.isNotEmpty ? name[0] : '';
-                dataList.add([
-                  name,
-                  firstLetter.toUpperCase(),
-                  nomor,
-                  date,
-                  color,
-                  file
-                ]);
-
-                // Menggabungkan semua data dari dataList menjadi list of maps
-                List<Map<String, dynamic>> newDataList = dataList.map((data) {
-                  return {
-                    'title': data[0],
-                    'subtitle': data[2],
-                    'date': data[3],
-                    'color': data[4],
-                    'file': data[5],
-                  };
-                }).toList();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Contacts Berhasil Ditambahkan"),
-                  ),
-                );
-                print(newDataList);
+                // Bersihkan textfield nama & nomor
+                editedName = '';
+                editedNomor = '';
+                nameController.clear();
+                nomorController.clear();
               }
-              // Bersihkan nilai yang diedit
-              editedName = '';
-              editedNomor = '';
-              nameController.clear();
-              nomorController.clear();
             });
           },
           child: Text(isEditing ? "Simpan" : "Submit"),
         ),
         const SizedBox(width: 5),
-        if (isEditing) // Tampilkan tombol "Batal Edit" jika sedang dalam mode edit
+
+        // Batal edit
+        if (isEditing)
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor:
@@ -275,7 +285,7 @@ class _createNewContactsState extends State<createNewContacts> {
             ),
             onPressed: () {
               setState(() {
-                // Keluar dari mode edit tanpa menyimpan perubahan
+                // Keluar dari mode edit dengan menghapus nama & nomor
                 isEditing = false;
                 editedName = '';
                 editedNomor = '';
@@ -348,6 +358,7 @@ class _createNewContactsState extends State<createNewContacts> {
                 ),
                 Row(
                   children: [
+                    // Edit name & Nomor
                     IconButton(
                       onPressed: () {
                         setState(() {
@@ -355,7 +366,7 @@ class _createNewContactsState extends State<createNewContacts> {
                           editedNomor = data[2];
                           nameController.text = editedName;
                           nomorController.text = editedNomor;
-                          isEditing = true; // Masuk ke mode edit
+                          isEditing = true;
                         });
                       },
                       icon: const Icon(
@@ -363,6 +374,8 @@ class _createNewContactsState extends State<createNewContacts> {
                         size: 24.0,
                       ),
                     ),
+
+                    // Hapus name & Nomor
                     IconButton(
                       onPressed: () {
                         showDialog(
@@ -379,10 +392,11 @@ class _createNewContactsState extends State<createNewContacts> {
                                     Navigator.of(context).pop();
                                   },
                                 ),
+                                //Membuat notif konfirmasi apakah jadi melakukan hapus data
                                 TextButton(
                                   child: const Text("Ya"),
                                   onPressed: () {
-                                    // Mengambil indeks item yang sesuai dengan tombol delete yang diklik
+                                    // Mengambil indeks item yang sesuai dengan button delete yang diklik
                                     int itemIndex = dataList.indexWhere(
                                         (item) =>
                                             item[0] == data[0] &&
@@ -394,8 +408,8 @@ class _createNewContactsState extends State<createNewContacts> {
                                         dataList.removeAt(itemIndex);
                                       });
                                     }
-                                    Navigator.of(context)
-                                        .pop(); // Tutup dialog konfirmasi
+                                    // Tutup Konfirmasi Hapus
+                                    Navigator.of(context).pop();
                                   },
                                 ),
                               ],
@@ -417,6 +431,7 @@ class _createNewContactsState extends State<createNewContacts> {
     );
   }
 
+// Membuat Fungsi membatasi panjang sebuah text
   String _truncateText(String text, int maxLength) {
     if (text.length <= maxLength) {
       return text;
@@ -424,6 +439,7 @@ class _createNewContactsState extends State<createNewContacts> {
     return text.substring(0, maxLength) + '...';
   }
 
+// Mengambil Data tanggal
   Widget buildDatePicker(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 0),
@@ -451,12 +467,13 @@ class _createNewContactsState extends State<createNewContacts> {
               ),
             ],
           ),
-          Text(DateFormat('dd-MM-yyyy').format(_dueDate)),
+          Text(DateFormat('EEEE-MM-yyyy').format(_dueDate)),
         ],
       ),
     );
   }
 
+// Memilih Warna
   Widget buildColorPicker(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -506,6 +523,7 @@ class _createNewContactsState extends State<createNewContacts> {
     );
   }
 
+// MengambilFile di direktori
   Widget BuildFilePicker(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -535,6 +553,7 @@ class _createNewContactsState extends State<createNewContacts> {
     );
   }
 
+// Menampilkan nama file di button
   void _pickFile() async {
     final result = await FilePicker.platform.pickFiles();
     if (result == null) return;
