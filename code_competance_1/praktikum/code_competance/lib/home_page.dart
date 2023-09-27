@@ -16,6 +16,33 @@ class _HomePageState extends State<HomePage> {
   TextEditingController comment = TextEditingController();
   List<List<dynamic>> dataList = [];
 
+String? validateName(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Nama wajib diisi';
+  }
+  
+  RegExp regex = RegExp(r'[!@#%^&*(),.?":{}|<>]');
+
+  if (regex.hasMatch(value)) {
+    return 'Nama tidak boleh mengandung karakter khusus';
+  }
+
+  return null;
+}
+String? validateEmail(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Email wajib diisi';
+  }
+
+  // Pola RegEx untuk validasi email
+  RegExp regex = RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
+
+  if (!regex.hasMatch(value)) {
+    return 'Alamat email tidak valid';
+  }
+
+  return null;
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,26 +171,24 @@ class _HomePageState extends State<HomePage> {
                               ),
                               child: TextFormField(
                                 controller: firstName,
-                                textCapitalization: TextCapitalization.words,
-                                decoration: const InputDecoration(
-                                  labelText: 'First name',
-                                  hintText: 'Insert Your Name',
-                                  labelStyle: TextStyle(
-                                    color: Colors.blueGrey,
-                                  ),
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.blueGrey,
+                                cursorColor: Colors.black45,
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.black45,
                                     ),
+                                    borderRadius: BorderRadius.circular(30),
                                   ),
-                                  border: InputBorder.none,
-                                  filled: true,
-                                  fillColor: Color(0xFFE7E0EC),
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.always,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  hintText: 'First name',
+                                  hintStyle: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
                                 ),
-                                // validator: validateName,
-                                onChanged: (value) {},
+                                validator: validateName,
                               ),
                             ),
                             ConstrainedBox(
@@ -173,52 +198,49 @@ class _HomePageState extends State<HomePage> {
                               ),
                               child: TextFormField(
                                 controller: lastName,
-                                textCapitalization: TextCapitalization.words,
-                                decoration: const InputDecoration(
-                                  labelText: 'Last name',
-                                  hintText: 'Insert Your Name',
-                                  labelStyle: TextStyle(
-                                    color: Colors.blueGrey,
-                                  ),
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.blueGrey,
+                                cursorColor: Colors.black45,
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.black45,
                                     ),
+                                    borderRadius: BorderRadius.circular(30),
                                   ),
-                                  border: InputBorder.none,
-                                  filled: true,
-                                  fillColor: Color(0xFFE7E0EC),
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.always,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  hintText: 'Last name',
+                                  hintStyle: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
                                 ),
-                                // validator: validateName,
-                                onChanged: (value) {},
+                                validator: validateName,
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
+                          validator: validateEmail,
                           controller: email,
-                          textCapitalization: TextCapitalization.words,
-                          decoration: const InputDecoration(
-                            labelText: 'Email',
-                            hintText: 'Insert Your Name',
-                            labelStyle: TextStyle(
-                              color: Colors.blueGrey,
-                            ),
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.blueGrey,
+                          cursorColor: Colors.black45,
+                          decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.black45,
                               ),
+                              borderRadius: BorderRadius.circular(30),
                             ),
-                            border: InputBorder.none,
-                            filled: true,
-                            fillColor: Color(0xFFE7E0EC),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            hintText: 'Email',
+                            hintStyle: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                            ),
                           ),
-                          // validator: validateName,
-                          onChanged: (value) {},
                         ),
                         const SizedBox(
                           height: 10,
@@ -243,18 +265,56 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     onPressed: () {
+                      String alertFirstName = firstName.text;
+                      String alertLastName = lastName.text;
+                      String alertEmail = email.text;
+                      String alertComment = comment.text;
                       if (formKey.currentState!.validate()) {
-                        dataList.add([
-                          firstName.text,
-                          lastName.text,
-                          email.text,
-                          comment.text
-                        ]);
-                        firstName.clear();
-                        lastName.clear();
-                        email.clear();
-                        comment.clear();
-                     
+                        setState(() {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text(
+                                    'Apakah anda yakin ingin mengirim ini?'),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                        'Nama: $alertFirstName  $alertLastName'),
+                                    Text('Email: $alertEmail'),
+                                    Text('Komentar: $alertComment'),
+                                  ],
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('No'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      dataList.add([
+                                        firstName.text,
+                                        lastName.text,
+                                        email.text,
+                                        comment.text
+                                      ]);
+                                      firstName.clear();
+                                      lastName.clear();
+                                      email.clear();
+                                      comment.clear();
+                                    },
+                                    child: const Text('Yes'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        });
                       }
                     },
                     child: const Text(
@@ -281,33 +341,51 @@ class _HomePageState extends State<HomePage> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
+                      const CircleAvatar(
+                        radius: 25.0,
+                        backgroundColor: Colors.blue,
+                        child: Icon(
+                          color: Colors.white,
+                          Icons.person,
+                          size: 24.0,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CircleAvatar(
-                            radius: 25.0,
-                            backgroundColor: Colors.green,
-                            child: Center(
-                              child: Text(
-                                "${data[0]}",
+                          Text("${data[0]} ${data[1]}",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 17)),
+                          Container(
+                            width: MediaQuery.of(context).size.width / 2,
+                            height: 100.0,
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(8.0),
+                              ),
+                              border: Border.all(
+                                color: Colors.orange,
+                                width: 1.5,
                               ),
                             ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("${data[1]}"),
-                              Text(
-                                "${(data[3])}",
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 4,
+                            child: Padding(
+                              padding: const EdgeInsets.all(3.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _truncateText(data[3], 95),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 4,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          )
                         ],
                       ),
                     ],
@@ -318,5 +396,12 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  String _truncateText(String text, int maxLength) {
+    if (text.length <= maxLength) {
+      return text;
+    }
+    return '${text.substring(0, maxLength)}...';
   }
 }
