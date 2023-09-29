@@ -25,9 +25,9 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (_) => const createNewContacts(),
+        '/': (_) => const CreateNewContacts(),
         '/showImage': (_) => const showImage(),
-        '/contacts': (_) => const gridviewScreen(),
+        '/contacts': (_) => const GridviewScreen(),
       },
     );
   }

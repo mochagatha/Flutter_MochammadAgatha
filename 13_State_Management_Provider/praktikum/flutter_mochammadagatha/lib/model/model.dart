@@ -1,6 +1,6 @@
 class GetContact {
   String name = '';
-  String firstLetter;
+  // String firstLetter;
   String nomor = '';
   String date = '';
   String color = '';
@@ -8,7 +8,7 @@ class GetContact {
 
   GetContact(
       {required this.name,
-      required this.firstLetter,
+      // required this.firstLetter,
       required this.nomor,
       required this.date,
       required this.color,

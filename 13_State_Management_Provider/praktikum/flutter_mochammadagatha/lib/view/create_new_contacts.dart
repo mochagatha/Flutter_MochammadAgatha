@@ -1,38 +1,22 @@
-// ignore_for_file: camel_case_types, prefer_typing_uninitialized_variables, unnecessary_string_interpolations, prefer_interpolation_to_compose_strings, non_constant_identifier_names, depend_on_referenced_packages, unnecessary_null_comparison, avoid_types_as_parameter_names, avoid_print, body_might_complete_normally_nullable, unused_local_variable
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_mochammadagatha/controller/contact.dart'
     as contact_store;
 
 import '../model/model.dart';
 
-class createNewContacts extends StatefulWidget {
-  const createNewContacts({Key? key}) : super(key: key);
+class CreateNewContacts extends StatefulWidget {
+  const CreateNewContacts({Key? key}) : super(key: key);
 
   @override
-  State<createNewContacts> createState() => _createNewContactsState();
+  State<CreateNewContacts> createState() => _CreateNewContactsState();
 }
 
-class _createNewContactsState extends State<createNewContacts> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController nomorController = TextEditingController();
-
-  String editedName = '';
-  String editedNomor = '';
-  bool isEditing = false;
-  DateTime _dueDate = DateTime.now();
-  final currentDate = DateTime.now();
-  Color _currentColor = const Color(0xFF6750A4);
-  String selectedFileName = "Pick Your File";
-  String? filePath;
-
+class _CreateNewContactsState extends State<CreateNewContacts> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   String? validateName(String? value) {
     if (value == null || value.isEmpty) {
@@ -72,13 +56,6 @@ class _createNewContactsState extends State<createNewContacts> {
   }
 
   @override
-  void dispose() {
-    nameController.dispose();
-    nomorController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -112,22 +89,22 @@ class _createNewContactsState extends State<createNewContacts> {
                     ],
                   ),
                 ),
-                TextFieldUser(),
+                textFieldUser(),
                 const SizedBox(height: 5),
                 buildDatePicker(context),
                 const SizedBox(height: 15),
                 buildColorPicker(context),
                 const SizedBox(height: 5),
-                BuildFilePicker(context),
+                buildFilePicker(context),
                 const SizedBox(height: 5),
-                Button(),
+                button(),
                 const SizedBox(height: 40),
                 Text(
                   "List Contacts",
                   style: GoogleFonts.roboto(
                       fontSize: 25, fontWeight: FontWeight.w400),
                 ),
-                ListContact()
+                listContact()
               ],
             ),
           ),
@@ -136,14 +113,15 @@ class _createNewContactsState extends State<createNewContacts> {
     );
   }
 
-  Widget TextFieldUser() {
+  Widget textFieldUser() {
+    final contactProvider = Provider.of<contact_store.Contact>(context);
     return Form(
         key: formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             TextFormField(
-              controller: nameController,
+              controller: contactProvider.nameController,
               textCapitalization: TextCapitalization.words,
               decoration: const InputDecoration(
                 labelText: 'Name',
@@ -169,7 +147,7 @@ class _createNewContactsState extends State<createNewContacts> {
             Column(
               children: [
                 TextFormField(
-                    controller: nomorController,
+                    controller: contactProvider.nomorController,
                     keyboardType: TextInputType.phone,
                     maxLength: 15,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -196,82 +174,73 @@ class _createNewContactsState extends State<createNewContacts> {
         ));
   }
 
-  Widget Button() {
+  Widget button() {
     final contactProvider = Provider.of<contact_store.Contact>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: isEditing ? Colors.green : const Color(0xFF6750A4),
+            backgroundColor: contactProvider.isEditing
+                ? Colors.green
+                : const Color(0xFF6750A4),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(50),
             ),
           ),
           onPressed: () {
-            setState(() {
-              if (formKey.currentState!.validate()) {
-                String name = nameController.text;
-                String nomor = nomorController.text;
-                String date = DateFormat('EEEE-dd-MM-yyyy').format(_dueDate);
-                String color = _currentColor.value.toRadixString(16);
-                String file = selectedFileName;
-                String firstLetter = name.isNotEmpty ? name[0] : '';
+            if (formKey.currentState!.validate()) {
+              //Mode edit data Nama & Nomor
+              if (contactProvider.isEditing) {
+                GetContact editedContact = contactProvider.contacts.firstWhere(
+                  (contact) =>
+                      contact.name == contactProvider.editedName &&
+                      contact.nomor == contactProvider.editedNomor,
+                );
+                contactProvider.editContact(
+                  editedContact,
+                  contactProvider.nameController.text,
+                  contactProvider.nomorController.text,
+                  DateFormat('EEEE-dd-MM-yyyy').format(contactProvider.dueDate),
+                  colorToHex(contactProvider.currentColor),
+                  contactProvider.selectedFileName,
+                );
+                contactProvider.isEditing = false;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Data Berhasil Diubah"),
+                  ),
+                );
+              } else {
+                // Mode Tambah data
+                contactProvider.add(GetContact(
+                  name: contactProvider.nameController.text,
+                  nomor: contactProvider.nomorController.text,
+                  date:DateFormat('EEEE-dd-MM-yyyy').format(contactProvider.dueDate),
+                  color: colorToHex(contactProvider.currentColor),
+                  file: contactProvider.selectedFileName,
+                ));
 
-                //Mode edit data Nama & Nomor
-                if (isEditing) {
-                  GetContact editedContact =
-                      contactProvider.contacts.firstWhere(
-                    (contact) =>
-                        contact.name == editedName &&
-                        contact.nomor == editedNomor,
-                  );
-                  contactProvider.editContact(
-                    editedContact,
-                    nameController.text,
-                    nomorController.text,
-                    DateFormat('EEEE-dd-MM-yyyy').format(_dueDate),
-                    _currentColor.value.toRadixString(16),
-                    selectedFileName,
-                  );
-                  isEditing = false;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Data Berhasil Diubah"),
-                    ),
-                  );
-                } else {
-                  // Mode Tambah data
-                  contactProvider.add(GetContact(
-                    name: name,
-                    firstLetter: firstLetter.toUpperCase(),
-                    nomor: nomor,
-                    date: date,
-                    color: color,
-                    file: file,
-                  ));
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Contacts Berhasil Ditambahkan"),
-                    ),
-                  );
-                }
-                editedName = '';
-                editedNomor = '';
-                nameController.clear();
-                nomorController.clear();
-                selectedFileName = "Pick Your File";
-                filePath = null;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Contacts Berhasil Ditambahkan"),
+                  ),
+                );
               }
-            });
+              contactProvider.editedName = '';
+              contactProvider.editedNomor = '';
+              contactProvider.nameController.clear();
+              contactProvider.nomorController.clear();
+              contactProvider.selectedFileName = "Pick Your File";
+              contactProvider.filePath = null;
+            }
           },
-          child: Text(isEditing ? "Simpan" : "Submit"),
+          child: Text(contactProvider.isEditing ? "Simpan" : "Submit"),
         ),
         const SizedBox(width: 5),
 
         // Batal edit
-        if (isEditing)
+        if (contactProvider.isEditing)
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor:
@@ -281,16 +250,7 @@ class _createNewContactsState extends State<createNewContacts> {
               ),
             ),
             onPressed: () {
-              setState(() {
-                // Keluar dari mode edit dengan menghapus nama & nomor
-                isEditing = false;
-                editedName = '';
-                editedNomor = '';
-                nameController.clear();
-                nomorController.clear();
-                selectedFileName = "Pick Your File";
-                filePath = null;
-              });
+              contactProvider.cancelEdit();
             },
             child: const Text("Batal"),
           ),
@@ -298,7 +258,7 @@ class _createNewContactsState extends State<createNewContacts> {
     );
   }
 
-  Widget ListContact() {
+  Widget listContact() {
     final contactProvider = Provider.of<contact_store.Contact>(context);
     return Column(
       children: [
@@ -315,7 +275,7 @@ class _createNewContactsState extends State<createNewContacts> {
                       backgroundColor: Colors.green,
                       child: Center(
                         child: Text(
-                          "${data.firstLetter}",
+                          data.name[0],
                           style: GoogleFonts.roboto(
                             color: Colors.white,
                             fontSize: 18,
@@ -331,11 +291,11 @@ class _createNewContactsState extends State<createNewContacts> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "${_truncateText(data.name, 20)}",
+                          _truncateText(data.name, 20),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
-                        Text("${data.nomor}"),
+                        Text(data.nomor),
                         Text("Date: ${data.date}"),
                         Row(
                           children: [
@@ -348,7 +308,7 @@ class _createNewContactsState extends State<createNewContacts> {
                           ],
                         ),
                         Text(
-                          "File Name: ${_truncateText(data.file, 20)}",
+                          "File Name: ${_truncateText(data.file, 15)}",
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
@@ -361,17 +321,7 @@ class _createNewContactsState extends State<createNewContacts> {
                     // Edit name & Nomor
                     IconButton(
                       onPressed: () {
-                        setState(() {
-                          editedName = data.name;
-                          editedNomor = data.nomor;
-                          nameController.text = data.name;
-                          nomorController.text = data.nomor;
-                          _currentColor = Color(int.parse("0x${data.color}"));
-                          _dueDate =
-                              DateFormat('EEEE-dd-MM-yyyy').parse(data.date);
-                          selectedFileName = data.file;
-                          isEditing = true;
-                        });
+                        contactProvider.startEditing(data);
                       },
                       icon: const Icon(
                         Icons.edit,
@@ -396,7 +346,6 @@ class _createNewContactsState extends State<createNewContacts> {
                                     Navigator.of(context).pop();
                                   },
                                 ),
-                                //Membuat notif konfirmasi apakah jadi melakukan hapus data
                                 TextButton(
                                   child: const Text("Ya"),
                                   onPressed: () {
@@ -404,19 +353,15 @@ class _createNewContactsState extends State<createNewContacts> {
                                     int itemIndex = contactProvider.contacts
                                         .indexWhere((item) =>
                                             item.name == data.name &&
-                                            item.firstLetter ==
-                                                data.firstLetter &&
                                             item.nomor == data.nomor);
-                                    // Hapus item dari dataList
+                                    // Hapus item dari dataList menggunakan fungsi dari provider
                                     if (itemIndex >= 0) {
-                                      setState(() {
-                                        contactProvider.contacts
-                                            .removeAt(itemIndex);
-                                      });
+                                      contactProvider.deleteContact(
+                                          contactProvider.contacts[itemIndex]);
                                     }
                                     // Tutup Konfirmasi Hapus
                                     Navigator.of(context).pop();
-                                    isEditing = false;
+                                    contactProvider.isEditing = false;
                                   },
                                 ),
                               ],
@@ -443,11 +388,12 @@ class _createNewContactsState extends State<createNewContacts> {
     if (text.length <= maxLength) {
       return text;
     }
-    return text.substring(0, maxLength) + '...';
+    return '${text.substring(0, maxLength)}...';
   }
 
 // Mengambil Data tanggal
   Widget buildDatePicker(BuildContext context) {
+    final contactProvider = Provider.of<contact_store.Contact>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 0),
       child: Column(
@@ -460,28 +406,28 @@ class _createNewContactsState extends State<createNewContacts> {
               TextButton(
                 onPressed: () async {
                   final selectDate = await showDatePicker(
-                      context: context,
-                      initialDate: currentDate,
-                      firstDate: DateTime(1990),
-                      lastDate: DateTime(currentDate.year + 5));
-                  setState(() {
-                    if (selectDate != null) {
-                      _dueDate = selectDate;
-                    }
-                  });
+                    context: context,
+                    initialDate: contactProvider.dueDate,
+                    firstDate: DateTime(1990),
+                    lastDate: DateTime(contactProvider.currentDate.year + 5),
+                  );
+                  if (selectDate != null) {
+                    contactProvider.setDueDate(selectDate);
+                  }
                 },
                 child: const Text("Select"),
               ),
             ],
           ),
-          Text(DateFormat('EEEE-dd-MM-yyyy').format(_dueDate)),
+          Text(DateFormat('EEEE-dd-MM-yyyy').format(contactProvider.dueDate)),
         ],
       ),
     );
   }
 
-// Memilih Warna
   Widget buildColorPicker(BuildContext context) {
+    final contactProvider = Provider.of<contact_store.Contact>(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -489,7 +435,7 @@ class _createNewContactsState extends State<createNewContacts> {
         Container(
           height: 100,
           width: double.infinity,
-          color: _currentColor,
+          color: contactProvider.currentColor,
         ),
         const SizedBox(
           height: 10,
@@ -497,31 +443,33 @@ class _createNewContactsState extends State<createNewContacts> {
         Center(
           child: ElevatedButton(
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(_currentColor)),
+              backgroundColor:
+                  MaterialStateProperty.all(contactProvider.currentColor),
+            ),
             onPressed: () {
               showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text("Pick your color"),
-                      content: BlockPicker(
-                        pickerColor: _currentColor,
-                        onColorChanged: (Color) {
-                          setState(() {
-                            _currentColor = Color;
-                          });
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("Pick your color"),
+                    content: BlockPicker(
+                      pickerColor: contactProvider.currentColor,
+                      onColorChanged: (Color color) {
+                        contactProvider.setCurrentColor(color);
+                        Navigator.pop(context);
+                      },
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
                         },
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text("Save"),
-                        )
-                      ],
-                    );
-                  });
+                        child: const Text("Save"),
+                      )
+                    ],
+                  );
+                },
+              );
             },
             child: const Text("Pick Color"),
           ),
@@ -530,8 +478,8 @@ class _createNewContactsState extends State<createNewContacts> {
     );
   }
 
-// MengambilFile di direktori
-  Widget BuildFilePicker(BuildContext context) {
+  Widget buildFilePicker(BuildContext context) {
+    final contactProvider = Provider.of<contact_store.Contact>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -542,37 +490,23 @@ class _createNewContactsState extends State<createNewContacts> {
         Center(
           child: ElevatedButton(
             onPressed: () {
-              _pickFile();
+              contactProvider.pickFile();
             },
-            child: Text(selectedFileName),
+            child: Text(contactProvider.selectedFileName),
           ),
         ),
-        if (filePath != null)
+        if (contactProvider.filePath != null)
           Center(
             child: ElevatedButton(
               onPressed: () {
-                _openFile(filePath!);
+                if (contactProvider.filePath != null) {
+                  contactProvider.openFile(contactProvider.filePath!);
+                }
               },
               child: const Text("Open File"),
             ),
           ),
       ],
     );
-  }
-
-// Menampilkan nama file di button
-  void _pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    if (result == null) return;
-
-    final file = result.files.first;
-    setState(() {
-      selectedFileName = file.name;
-      filePath = file.path!;
-    });
-  }
-
-  void _openFile(String filePath) {
-    OpenFile.open(filePath);
   }
 }

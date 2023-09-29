@@ -1,16 +1,14 @@
-// ignore_for_file: camel_case_types, sized_box_for_whitespace, non_constant_identifier_names
-
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 
-class gridviewScreen extends StatefulWidget {
-  const gridviewScreen({Key? key}) : super(key: key);
+class GridviewScreen extends StatefulWidget {
+  const GridviewScreen({Key? key}) : super(key: key);
 
   @override
-  State<gridviewScreen> createState() => _gridviewScreenState();
+  State<GridviewScreen> createState() => _GridviewScreenState();
 }
 
-class _gridviewScreenState extends State<gridviewScreen> {
+class _GridviewScreenState extends State<GridviewScreen> {
   List<List<String>> dataList = [
     ['assets/zee-jkt48.jpeg', 'Zee'],
     ['assets/melody.jpeg', 'Melody'],
@@ -36,7 +34,7 @@ class _gridviewScreenState extends State<gridviewScreen> {
           mainAxisSpacing: 6,
           crossAxisSpacing: 6,
         ),
-        itemCount: dataList.length, 
+        itemCount: dataList.length,
         shrinkWrap: true,
         // physics: const ScrollPhysics(), //Mematikan scroll
         itemBuilder: (BuildContext context, int index) {
@@ -52,9 +50,9 @@ class _gridviewScreenState extends State<gridviewScreen> {
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(20))),
                   context: context,
-                  builder: (context) => Container(
+                  builder: (context) => SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      child: ProfileSheet(index: index)));
+                      child: profileSheet(index: index)));
             },
             child: Image.asset(
               dataList[index][0],
@@ -66,7 +64,7 @@ class _gridviewScreenState extends State<gridviewScreen> {
     );
   }
 
-  Widget ProfileSheet({required int index}) {
+  Widget profileSheet({required int index}) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
