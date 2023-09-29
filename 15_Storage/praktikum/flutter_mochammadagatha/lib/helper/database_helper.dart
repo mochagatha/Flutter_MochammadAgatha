@@ -5,20 +5,6 @@ import 'package:sqflite/sqflite.dart';
 class DatabaseHelper {
   late Database _database;
 
-// Future<void> open() async {
-//   final databasePath = await getDatabasesPath();
-//   final dbPath = path.join(databasePath, 'contacts.db');
-
-//   _database = await openDatabase(
-//     dbPath,
-//     version: 1,
-//     onCreate: (db, version) {
-//       return db.execute(
-//         'CREATE TABLE contacts(id INTEGER PRIMARY KEY, name TEXT, phoneNumber TEXT, date TEXT, color TEXT, fileName TEXT)',
-//       );
-//     },
-//   );
-// }
   Future<Database> getDatabase() async {
     if (_database.isOpen) {
       return _database;
