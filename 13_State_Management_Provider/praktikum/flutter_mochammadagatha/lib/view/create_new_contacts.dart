@@ -54,7 +54,11 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
 
     return null;
   }
-
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,7 +118,7 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
   }
 
   Widget textFieldUser() {
-    final contactProvider = Provider.of<contact_store.Contact>(context);
+    final contactProvider = Provider.of<contact_store.Contact>(context, listen: false);
     return Form(
         key: formKey,
         child: Column(
@@ -175,7 +179,7 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
   }
 
   Widget button() {
-    final contactProvider = Provider.of<contact_store.Contact>(context);
+    final contactProvider = Provider.of<contact_store.Contact>(context, listen: false);
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -259,7 +263,7 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
   }
 
   Widget listContact() {
-    final contactProvider = Provider.of<contact_store.Contact>(context);
+    final contactProvider = Provider.of<contact_store.Contact>(context, listen: false);
     return Column(
       children: [
         for (var data in contactProvider.contacts)
@@ -393,7 +397,7 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
 
 // Mengambil Data tanggal
   Widget buildDatePicker(BuildContext context) {
-    final contactProvider = Provider.of<contact_store.Contact>(context);
+    final contactProvider = Provider.of<contact_store.Contact>(context, listen: false);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 0),
       child: Column(
@@ -426,7 +430,7 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
   }
 
   Widget buildColorPicker(BuildContext context) {
-    final contactProvider = Provider.of<contact_store.Contact>(context);
+    final contactProvider = Provider.of<contact_store.Contact>(context, listen: false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -479,7 +483,7 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
   }
 
   Widget buildFilePicker(BuildContext context) {
-    final contactProvider = Provider.of<contact_store.Contact>(context);
+    final contactProvider = Provider.of<contact_store.Contact>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -30,8 +30,6 @@ class Contact with ChangeNotifier {
 
     if (contactIndex != -1) {
       _contacts[contactIndex].name = newName;
-      // _contacts[contactIndex].firstLetter =
-      //     newName.isNotEmpty ? newName[0] : '';
       _contacts[contactIndex].nomor = newNomor;
       _contacts[contactIndex].date = newDate;
       _contacts[contactIndex].color = newColor;
