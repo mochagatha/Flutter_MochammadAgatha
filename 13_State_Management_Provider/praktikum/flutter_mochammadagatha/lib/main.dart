@@ -8,7 +8,7 @@ import 'package:flutter_mochammadagatha/controller/contact.dart' as contact_stor
 void main() {
   // runApp(const MyApp());
     runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (_) => contact_store.Contact())
+    ChangeNotifierProvider(create: (_) => contact_store.ContactProvider())
   ],
   child: const MyApp(),
   ));

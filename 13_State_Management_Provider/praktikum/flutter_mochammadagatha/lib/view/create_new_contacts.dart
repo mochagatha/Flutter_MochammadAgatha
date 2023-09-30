@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_mochammadagatha/controller/contact.dart'
     as contact_store;
 
+import '../controller/contact.dart';
 import '../model/model.dart';
 
 class CreateNewContacts extends StatefulWidget {
@@ -18,47 +19,15 @@ class CreateNewContacts extends StatefulWidget {
 
 class _CreateNewContactsState extends State<CreateNewContacts> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  String? validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Nama wajib diisi';
-    }
-    List<String> words = value.split(' ');
+  late ContactProvider contactProvider;
 
-    for (String word in words) {
-      if (!RegExp(r'^[A-Z][a-zA-Z]*$').hasMatch(word)) {
-        return 'Nama boleh tidak mengandung angka atau karakter khusus.';
-      }
-    }
-    if (words.length < 2) {
-      return 'Nama harus terdiri dari minimal 2 kata';
-    }
-
-    return null;
-  }
-
-  String? validateNomor(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Nomor wajib diisi';
-    }
-
-    if (value.length < 8) {
-      return 'Nomor harus terdiri dari minimal 8 angka';
-    }
-
-    if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-      return 'Nomor hanya boleh angka';
-    }
-    if (!value.startsWith('0')) {
-      return 'Nomor harus diawali 0';
-    }
-
-    return null;
-  }
-@override
+  @override
   void initState() {
-    // TODO: implement initState
+    contactProvider =
+        Provider.of<contact_store.ContactProvider>(context, listen: false);
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,7 +87,6 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
   }
 
   Widget textFieldUser() {
-    final contactProvider = Provider.of<contact_store.Contact>(context, listen: false);
     return Form(
         key: formKey,
         child: Column(
@@ -142,7 +110,7 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
                 fillColor: Color(0xFFE7E0EC),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
-              validator: validateName,
+              validator: (value) => contactProvider.validateName(value),
               onChanged: (value) {},
             ),
             const SizedBox(
@@ -171,7 +139,7 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                     ),
                     onChanged: (value) {},
-                    validator: validateNomor),
+                    validator: (value) => contactProvider.validateNomor(value)),
               ],
             )
           ],
@@ -179,211 +147,213 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
   }
 
   Widget button() {
-    final contactProvider = Provider.of<contact_store.Contact>(context, listen: false);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: contactProvider.isEditing
-                ? Colors.green
-                : const Color(0xFF6750A4),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50),
-            ),
-          ),
-          onPressed: () {
-            if (formKey.currentState!.validate()) {
-              //Mode edit data Nama & Nomor
-              if (contactProvider.isEditing) {
-                GetContact editedContact = contactProvider.contacts.firstWhere(
-                  (contact) =>
-                      contact.name == contactProvider.editedName &&
-                      contact.nomor == contactProvider.editedNomor,
-                );
-                contactProvider.editContact(
-                  editedContact,
-                  contactProvider.nameController.text,
-                  contactProvider.nomorController.text,
-                  DateFormat('EEEE-dd-MM-yyyy').format(contactProvider.dueDate),
-                  colorToHex(contactProvider.currentColor),
-                  contactProvider.selectedFileName,
-                );
-                contactProvider.isEditing = false;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Data Berhasil Diubah"),
-                  ),
-                );
-              } else {
-                // Mode Tambah data
-                contactProvider.add(GetContact(
-                  name: contactProvider.nameController.text,
-                  nomor: contactProvider.nomorController.text,
-                  date:DateFormat('EEEE-dd-MM-yyyy').format(contactProvider.dueDate),
-                  color: colorToHex(contactProvider.currentColor),
-                  file: contactProvider.selectedFileName,
-                ));
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Contacts Berhasil Ditambahkan"),
-                  ),
-                );
-              }
-              contactProvider.editedName = '';
-              contactProvider.editedNomor = '';
-              contactProvider.nameController.clear();
-              contactProvider.nomorController.clear();
-              contactProvider.selectedFileName = "Pick Your File";
-              contactProvider.filePath = null;
-            }
-          },
-          child: Text(contactProvider.isEditing ? "Simpan" : "Submit"),
-        ),
-        const SizedBox(width: 5),
-
-        // Batal edit
-        if (contactProvider.isEditing)
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  Colors.red, // Atur warna latar belakang sesuai keinginan
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50),
+    return Consumer<contact_store.ContactProvider>(
+      builder: (context, contactProvider, child) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: contactProvider.isEditing
+                    ? Colors.green
+                    : const Color(0xFF6750A4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
               ),
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  //Mode edit data Nama & Nomor
+                  if (contactProvider.isEditing) {
+                    GetContact editedContact =
+                        contactProvider.contacts.firstWhere(
+                      (contact) =>
+                          contact.name == contactProvider.editedName &&
+                          contact.nomor == contactProvider.editedNomor,
+                    );
+                    contactProvider.editContact(
+                      editedContact,
+                      contactProvider.nameController.text,
+                      contactProvider.nomorController.text,
+                      DateFormat('EEEE-dd-MM-yyyy')
+                          .format(contactProvider.dueDate),
+                      colorToHex(contactProvider.currentColor),
+                      contactProvider.selectedFileName,
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Data Berhasil Diubah"),
+                      ),
+                    );
+                  } else {
+                    // Mode Tambah data
+                    contactProvider.add(GetContact(
+                      name: contactProvider.nameController.text,
+                      nomor: contactProvider.nomorController.text,
+                      date: DateFormat('EEEE-dd-MM-yyyy')
+                          .format(contactProvider.dueDate),
+                      color: colorToHex(contactProvider.currentColor),
+                      file: contactProvider.selectedFileName,
+                    ));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Contacts Berhasil Ditambahkan"),
+                      ),
+                    );
+                  }
+                }
+              },
+              child: Text(contactProvider.isEditing ? "Simpan" : "Submit"),
             ),
-            onPressed: () {
-              contactProvider.cancelEdit();
-            },
-            child: const Text("Batal"),
-          ),
-      ],
+            const SizedBox(width: 5),
+            Visibility(
+              visible: contactProvider.isEditing,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                onPressed: () {
+                  contactProvider.cancelEdit();
+                },
+                child: const Text("Batal"),
+              ),
+            )
+          ],
+        );
+      },
     );
   }
 
   Widget listContact() {
-    final contactProvider = Provider.of<contact_store.Contact>(context, listen: false);
-    return Column(
-      children: [
-        for (var data in contactProvider.contacts)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
+    return Consumer<contact_store.ContactProvider>(
+      builder: (context, contactProvider, child) {
+        return Column(
+          children: [
+            for (var data in contactProvider.contacts)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CircleAvatar(
-                      radius: 25.0,
-                      backgroundColor: Colors.green,
-                      child: Center(
-                        child: Text(
-                          data.name[0],
-                          style: GoogleFonts.roboto(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 25.0,
+                          backgroundColor: Colors.green,
+                          child: Center(
+                            child: Text(
+                              data.name[0],
+                              style: GoogleFonts.roboto(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _truncateText(data.name, 20),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+                        const SizedBox(
+                          width: 10,
                         ),
-                        Text(data.nomor),
-                        Text("Date: ${data.date}"),
-                        Row(
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text("Color: "),
-                            Container(
-                              color: Color(int.parse("0x${data.color}")),
-                              width: 15,
-                              height: 15,
-                            )
+                            Text(
+                              _truncateText(data.name, 20),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            Text(data.nomor),
+                            Text("Date: ${data.date}"),
+                            Row(
+                              children: [
+                                const Text("Color: "),
+                                Container(
+                                  color: Color(int.parse("0x${data.color}")),
+                                  width: 15,
+                                  height: 15,
+                                )
+                              ],
+                            ),
+                            Text(
+                              "File Name: ${_truncateText(data.file, 15)}",
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
                           ],
                         ),
-                        Text(
-                          "File Name: ${_truncateText(data.file, 15)}",
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        // Edit name & Nomor
+                        IconButton(
+                          onPressed: () {
+                            contactProvider.startEditing(data);
+                          },
+                          icon: const Icon(
+                            Icons.edit,
+                            size: 24.0,
+                          ),
                         ),
+
+                        // Hapus name & Nomor
+                        IconButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("Hapus Kontak"),
+                                  content: const Text(
+                                      "Apakah Anda yakin ingin menghapus kontak ini?"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text("Tidak"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text("Ya"),
+                                      onPressed: () {
+                                        // Mengambil indeks item yang sesuai dengan button delete yang diklik
+                                        int itemIndex = contactProvider.contacts
+                                            .indexWhere((item) =>
+                                                item.name == data.name &&
+                                                item.nomor == data.nomor);
+                                        // Hapus item dari dataList menggunakan fungsi dari provider
+                                        if (itemIndex >= 0) {
+                                          contactProvider.deleteContact(
+                                              contactProvider
+                                                  .contacts[itemIndex]);
+                                        }
+                                        // Tutup Konfirmasi Hapus
+                                        Navigator.of(context).pop();
+                                        contactProvider.isEditing = false;
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.delete,
+                            size: 24.0,
+                          ),
+                        )
                       ],
                     ),
                   ],
                 ),
-                Row(
-                  children: [
-                    // Edit name & Nomor
-                    IconButton(
-                      onPressed: () {
-                        contactProvider.startEditing(data);
-                      },
-                      icon: const Icon(
-                        Icons.edit,
-                        size: 24.0,
-                      ),
-                    ),
-
-                    // Hapus name & Nomor
-                    IconButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text("Hapus Kontak"),
-                              content: const Text(
-                                  "Apakah Anda yakin ingin menghapus kontak ini?"),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text("Tidak"),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                                TextButton(
-                                  child: const Text("Ya"),
-                                  onPressed: () {
-                                    // Mengambil indeks item yang sesuai dengan button delete yang diklik
-                                    int itemIndex = contactProvider.contacts
-                                        .indexWhere((item) =>
-                                            item.name == data.name &&
-                                            item.nomor == data.nomor);
-                                    // Hapus item dari dataList menggunakan fungsi dari provider
-                                    if (itemIndex >= 0) {
-                                      contactProvider.deleteContact(
-                                          contactProvider.contacts[itemIndex]);
-                                    }
-                                    // Tutup Konfirmasi Hapus
-                                    Navigator.of(context).pop();
-                                    contactProvider.isEditing = false;
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.delete,
-                        size: 24.0,
-                      ),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
-      ],
+              ),
+          ],
+        );
+      },
     );
   }
 
@@ -397,7 +367,6 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
 
 // Mengambil Data tanggal
   Widget buildDatePicker(BuildContext context) {
-    final contactProvider = Provider.of<contact_store.Contact>(context, listen: false);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 0),
       child: Column(
@@ -409,6 +378,8 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
               const Text("Date"),
               TextButton(
                 onPressed: () async {
+                  final contactProvider =
+                      context.read<contact_store.ContactProvider>();
                   final selectDate = await showDatePicker(
                     context: context,
                     initialDate: contactProvider.dueDate,
@@ -423,94 +394,102 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
               ),
             ],
           ),
-          Text(DateFormat('EEEE-dd-MM-yyyy').format(contactProvider.dueDate)),
+          Consumer<contact_store.ContactProvider>(
+            builder: (context, contactProvider, child) {
+              return Text(DateFormat('EEEE-dd-MM-yyyy')
+                  .format(contactProvider.dueDate));
+            },
+          ),
         ],
       ),
     );
   }
 
   Widget buildColorPicker(BuildContext context) {
-    final contactProvider = Provider.of<contact_store.Contact>(context, listen: false);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("Color"),
-        Container(
-          height: 100,
-          width: double.infinity,
-          color: contactProvider.currentColor,
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Center(
-          child: ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all(contactProvider.currentColor),
+    return Consumer<contact_store.ContactProvider>(
+      builder: (context, contactProvider, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("Color"),
+            Container(
+              height: 100,
+              width: double.infinity,
+              color: contactProvider.currentColor,
             ),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text("Pick your color"),
-                    content: BlockPicker(
-                      pickerColor: contactProvider.currentColor,
-                      onColorChanged: (Color color) {
-                        contactProvider.setCurrentColor(color);
-                        Navigator.pop(context);
-                      },
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
+            const SizedBox(
+              height: 10,
+            ),
+            Center(
+                child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all(contactProvider.currentColor),
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Pick your color"),
+                      content: BlockPicker(
+                        pickerColor: contactProvider.currentColor,
+                        onColorChanged: (Color color) {
+                          contactProvider.setCurrentColor(color);
                         },
-                        child: const Text("Save"),
-                      )
-                    ],
-                  );
-                },
-              );
-            },
-            child: const Text("Pick Color"),
-          ),
-        )
-      ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text("Save"),
+                        )
+                      ],
+                    );
+                  },
+                );
+              },
+              child: const Text("Pick Color"),
+            ))
+          ],
+        );
+      },
     );
   }
 
   Widget buildFilePicker(BuildContext context) {
-    final contactProvider = Provider.of<contact_store.Contact>(context, listen: false);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("Pick File"),
-        const SizedBox(
-          height: 10,
-        ),
-        Center(
-          child: ElevatedButton(
-            onPressed: () {
-              contactProvider.pickFile();
-            },
-            child: Text(contactProvider.selectedFileName),
-          ),
-        ),
-        if (contactProvider.filePath != null)
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                if (contactProvider.filePath != null) {
-                  contactProvider.openFile(contactProvider.filePath!);
-                }
-              },
-              child: const Text("Open File"),
+    return Consumer<contact_store.ContactProvider>(
+      builder: (context, contactProvider, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("Pick File"),
+            const SizedBox(
+              height: 10,
             ),
-          ),
-      ],
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  contactProvider.pickFile();
+                },
+                child: Text(contactProvider.selectedFileName),
+              ),
+            ),
+            if (contactProvider.filePath != null)
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (contactProvider.filePath != null) {
+                      contactProvider.openFile(contactProvider.filePath!);
+                    }
+                  },
+                  child: const Text("Open File"),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }
