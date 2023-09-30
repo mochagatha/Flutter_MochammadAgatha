@@ -40,10 +40,11 @@ dependencies:
   flutter_colorpicker: ^1.0.3
   open_file: ^3.3.2
   intl: ^0.18.1
-  email_validator: ^2.1.17
+  provider: ^6.0.5
   shared_preferences: ^2.2.1
   sqflite: ^2.3.0
   path: ^1.8.3
+  # sqflite_common_ffi: ^2.3.0+2
 
 
 dev_dependencies:
