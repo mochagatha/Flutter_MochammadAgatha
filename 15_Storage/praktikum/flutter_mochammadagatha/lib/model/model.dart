@@ -1,5 +1,5 @@
 class ModelContact {
-  late int id;
+  int? id;
   String name = '';
   String nomor = '';
   String date = '';
@@ -7,7 +7,8 @@ class ModelContact {
   String file = '';
 
   ModelContact(
-      {required this.name,
+      {this.id,
+      required this.name,
       required this.nomor,
       required this.date,
       required this.color,
@@ -15,6 +16,7 @@ class ModelContact {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'name': name,
       'nomor': nomor,
       'date': date,

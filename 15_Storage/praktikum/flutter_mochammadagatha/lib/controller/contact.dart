@@ -13,7 +13,7 @@ class ContactProvider with ChangeNotifier {
   Color currentColor = const Color(0xFF6750A4);
   String selectedFileName = "Pick Your File";
   String? filePath;
-  final List<ModelContact> _contacts = [];
+  List<ModelContact> _contacts = [];
   List<ModelContact> get contacts => _contacts;
   String editedName = '';
   String editedNomor = '';
@@ -27,9 +27,15 @@ class ContactProvider with ChangeNotifier {
   }
 
   void add(ModelContact contact) async {
-    await dbHelper.insertContact(contact);
     _contacts.add(contact);
-    notifyListeners();
+    editedName = '';
+    editedNomor = '';
+    nameController.clear();
+    nomorController.clear();
+    selectedFileName = "Pick Your File";
+    filePath = null;
+    dbHelper.insertContact(contact);
+   _getAllContact();
   }
 
   void editContact(ModelContact editedContact, String newName, String newNomor,
@@ -43,18 +49,43 @@ class ContactProvider with ChangeNotifier {
       _contacts[contactIndex].date = newDate;
       _contacts[contactIndex].color = newColor;
       _contacts[contactIndex].file = newFile;
-      await dbHelper.updateContact(editedContact);
-      
-     
-    }
-     notifyListeners();
-  }
+      isEditing = false;
 
-  void deleteContact(ModelContact contact) async {
-    await dbHelper.deleteContact(contact.id);
-    _contacts.remove(contact);
+      editedName = '';
+      editedNomor = '';
+      nameController.clear();
+      nomorController.clear();
+      selectedFileName = "Pick Your File";
+      filePath = null;
+      dbHelper.updateContact(editedContact);
+    }
     notifyListeners();
   }
+
+  // void deleteContact(ModelContact contact) async {
+  //   await dbHelper.deleteContact(contact.id);
+  //   final contactIndex = _contacts.indexWhere((contact) => contact.id == id);
+  //   if (contactIndex != -1) {
+  //     _contacts.removeAt(contactIndex);
+  //   }
+
+  //   notifyListeners();
+  // }
+  void _getAllContact() async {
+    _contacts = await dbHelper.getContacts();
+    notifyListeners();
+  }
+  //   void deleteContact(int id) async {
+  //   await dbHelper.deleteContact(id);
+  //  _getAllContact();
+  // }
+  void deleteContact(String name) async {
+    await dbHelper.deleteContact(name);
+   _getAllContact();
+  }
+
+
+
 
   void setDueDate(DateTime newDueDate) {
     dueDate = newDueDate;

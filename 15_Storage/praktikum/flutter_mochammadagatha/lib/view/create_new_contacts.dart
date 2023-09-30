@@ -9,6 +9,7 @@ import 'package:flutter_mochammadagatha/controller/contact.dart'
     as contact_store;
 
 import '../controller/contact.dart';
+import '../model/db_manager.dart';
 import '../model/model.dart';
 
 class CreateNewContacts extends StatefulWidget {
@@ -21,6 +22,7 @@ class CreateNewContacts extends StatefulWidget {
 class _CreateNewContactsState extends State<CreateNewContacts> {
   late ContactProvider contactProvider;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  late DatabaseHelper contactList;
 
   @override
   void initState() {
@@ -201,7 +203,6 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
                         content: Text("Data Berhasil Diubah"),
                       ),
                     );
-                    contactProvider.isEditing = false;
                   } else {
                     // Mode Tambah data
                     contactProvider.add(ModelContact(
@@ -212,43 +213,32 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
                       color: colorToHex(contactProvider.currentColor),
                       file: contactProvider.selectedFileName,
                     ));
-
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Contacts Berhasil Ditambahkan"),
                       ),
                     );
                   }
-                  contactProvider.editedName = '';
-                  contactProvider.editedNomor = '';
-                  contactProvider.nameController.clear();
-                  contactProvider.nomorController.clear();
-                  contactProvider.selectedFileName = "Pick Your File";
-                  contactProvider.filePath = null;
                 }
               },
               child: Text(contactProvider.isEditing ? "Simpan" : "Submit"),
             ),
             const SizedBox(width: 5),
-
-            // Batal edit
-            if (contactProvider.isEditing)
-              Consumer<contact_store.ContactProvider>(
-                builder: (context, contactProvider, child) {
-                  return ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                    ),
-                    onPressed: () {
-                      contactProvider.cancelEdit();
-                    },
-                    child: const Text("Batal"),
-                  );
+            Visibility(
+              visible: contactProvider.isEditing,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                onPressed: () {
+                  contactProvider.cancelEdit();
                 },
+                child: const Text("Batal"),
               ),
+            )
           ],
         );
       },
@@ -355,24 +345,10 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
                                             return TextButton(
                                               child: const Text("Ya"),
                                               onPressed: () {
-                                                // Mengambil indeks item yang sesuai dengan button delete yang diklik
-                                                int itemIndex = contactProvider
-                                                    .contacts
-                                                    .indexWhere((item) =>
-                                                        item.name ==
-                                                            data.name &&
-                                                        item.nomor ==
-                                                            data.nomor);
-                                                // Hapus item dari dataList menggunakan fungsi dari provider
-                                                if (itemIndex >= 0) {
-                                                  contactProvider.deleteContact(
-                                                      contactProvider
-                                                          .contacts[itemIndex]);
-                                                }
-                                                // Tutup Konfirmasi Hapus
                                                 Navigator.of(context).pop();
-                                                contactProvider.isEditing =
-                                                    false;
+                                                contactProvider
+                                                    .deleteContact(data.name);
+
                                               },
                                             );
                                           },

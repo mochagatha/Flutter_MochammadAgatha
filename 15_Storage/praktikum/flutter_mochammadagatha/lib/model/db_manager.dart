@@ -43,7 +43,7 @@ class DatabaseHelper {
   }
 
   Future<void> insertContact(ModelContact contact) async {
-    final database = await this.database; // Memastikan database diinisialisasi.
+    final database = await this.database;
 
     await database.insert(
       'contacts',
@@ -78,13 +78,14 @@ class DatabaseHelper {
     );
   }
 
-  Future<void> deleteContact(int id) async {
+ 
+    Future<void> deleteContact(String name)async {
     final database = await this.database;
 
     await database.delete(
       'contacts',
-      where: 'id = ?',
-      whereArgs: [id],
+      where: 'name= ?',
+      whereArgs: [name],
     );
   }
 }
