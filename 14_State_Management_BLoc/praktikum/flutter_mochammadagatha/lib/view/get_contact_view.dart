@@ -1,11 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_mochammadagatha/app_screen/get_contact_bloc/bloc/contact_list_bloc.dart';
-// import 'package:flutter_test_alta1/app_screen/get_contact_bloc/model/contact_model.dart';
-// import 'package:flutter_test_alta1/app_screen/get_contact_bloc/view/contact_card.dart';
-// import 'package:flutter_test_alta1/app_screen/get_contact_bloc/view/input_field.dart';
-// import 'package:flutter_test_alta1/app_screen/get_contact_bloc/view/tittle_and_description.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import '../bloc/contact_list_bloc.dart';
 import '../model/contact_model.dart';
 import 'contact_card.dart';
@@ -121,8 +116,7 @@ class _GetContactViewState extends State<GetContactView> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text('ContactListBloc'),
+        title: const Text('Contacts'),
       ),
       body: SingleChildScrollView(
         controller: scrollController,
@@ -140,19 +134,16 @@ class _GetContactViewState extends State<GetContactView> {
               nameInputController: nameController,
               numberInputController: numberController,
             ),
-            const Text(
-              "Contact List",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w400,
-              ),
+            Text(
+              "List Contacts",
+              style:
+                  GoogleFonts.roboto(fontSize: 25, fontWeight: FontWeight.w400),
             ),
             BlocConsumer<ContactListBloc, ContactListState>(
-              listener: (context, state) {
-                
-              },
+              listener: (context, state) {},
               builder: (context, state) {
-                return ListView.builder(
+                return 
+                ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: state.contactList.length,

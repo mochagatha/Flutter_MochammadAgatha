@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-// import "package:flutter_profile_picture/flutter_profile_picture.dart";
+import "package:google_fonts/google_fonts.dart";
 
 class ContactCard extends StatelessWidget {
   final String name;
@@ -24,6 +24,7 @@ class ContactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -31,44 +32,60 @@ class ContactCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // ProfilePicture(
-          //   name: name,
-          //   radius: 25,
-          //   fontsize: 20,
-          //   count: 2,
-          // ),
           Expanded(
             flex: 1,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+              child: Row(
                 children: [
-                  Text(
-                    name,
-                    softWrap: true,
-                    overflow: TextOverflow.clip,
+                  CircleAvatar(
+                    radius: 25.0,
+                    backgroundColor: Colors.green,
+                    child: Center(
+                      child: Text(
+                        name[0],
+                        style: GoogleFonts.roboto(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
                   ),
-                  Text(
-                    number,
-                    softWrap: true,
-                    overflow: TextOverflow.clip,
+                  const SizedBox(
+                    width: 10,
                   ),
-                  Text(
-                    date,
-                    softWrap: true,
-                    overflow: TextOverflow.clip,
-                  ),
-                  Text(
-                    color,
-                    softWrap: true,
-                    overflow: TextOverflow.clip,
-                  ),
-                  Text(
-                    filePath,
-                    softWrap: true,
-                    overflow: TextOverflow.clip,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(
+                       _truncateText(name, 20),
+                        softWrap: true,
+                        overflow: TextOverflow.clip,
+                      ),
+                      Text(
+                        number,
+                        softWrap: true,
+                        overflow: TextOverflow.clip,
+                      ),
+                      Text(
+                        date,
+                        softWrap: true,
+                        overflow: TextOverflow.clip,
+                      ),
+            
+                      Text(
+                      _truncateText(color, 20),
+                        softWrap: true,
+                        overflow: TextOverflow.clip,
+                      ),
+                      Text(
+                        _truncateText(filePath, 20),
+                        softWrap: true,
+                        overflow: TextOverflow.clip,
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -85,5 +102,11 @@ class ContactCard extends StatelessWidget {
         ],
       ),
     );
+  }
+    String _truncateText(String text, int maxLength) {
+    if (text.length <= maxLength) {
+      return text;
+    }
+    return '${text.substring(0, maxLength)}...';
   }
 }

@@ -22,12 +22,6 @@
 //     required this.newFileName,
 //   });
 // }
-
-// class RemoveContact extends ContactListEvent {
-//   final int index;
-//   RemoveContact({required this.index});
-// }
-
 part of 'contact_list_bloc.dart';
 
 abstract class ContactListEvent {

@@ -1,7 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-// import 'package:flutter_test_alta1/app_screen/get_contact_provider/view/validation_function.dart';
 import 'package:intl/intl.dart';
 
 import 'validation_function.dart';
@@ -68,54 +68,56 @@ class _InputFieldState extends State<InputField> {
               maxLines: 1,
               controller: widget.nameInputController,
               validator: (String? value) {
-                return validatingName(value!);
+                return validateName(value!);
               },
               style: const TextStyle(
                 fontSize: 16,
                 color: Color(0xFF49454F),
               ),
               decoration: const InputDecoration(
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                filled: true,
-                hintStyle: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF49454F),
-                ),
-                hintText: 'Input Your Name',
-                labelStyle: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF49454F),
-                ),
                 labelText: 'Name',
+                hintText: 'Insert Your Name',
+                labelStyle: TextStyle(
+                  color: Colors.blueGrey,
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.blueGrey,
+                  ),
+                ),
+                filled: true,
+                fillColor: Color(0xFFE7E0EC),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
             ),
             const SizedBox(height: 15),
             TextFormField(
               keyboardType: TextInputType.phone,
+              maxLength: 15,
               maxLines: 1,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               controller: widget.numberInputController,
               validator: (String? value) {
-                return validatingNumber(value!);
+                return validateNomor(value!);
               },
               style: const TextStyle(
                 fontSize: 16,
                 color: Color(0xFF49454F),
               ),
               decoration: const InputDecoration(
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                filled: true,
-                hintStyle: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF49454F),
-                ),
-                hintText: 'Input Your Phone Number',
+                labelText: 'Nomor',
+                hintText: '+62...',
                 labelStyle: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF49454F),
+                  color: Colors.blueGrey,
                 ),
-                labelText: 'Number',
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.blueGrey,
+                  ),
+                ),
+                filled: true,
+                fillColor: Color(0xFFE7E0EC),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
             ),
             const SizedBox(height: 15),
@@ -155,6 +157,7 @@ class _InputFieldState extends State<InputField> {
                 labelText: 'Date',
               ),
             ),
+            
             const SizedBox(height: 15),
             Center(
               child: ElevatedButton(

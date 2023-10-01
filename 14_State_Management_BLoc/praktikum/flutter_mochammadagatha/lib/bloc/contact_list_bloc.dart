@@ -1,21 +1,5 @@
-// class Contact {
-//   String name = '';
-//   String nomor = '';
-//   String date = '';
-//   String color = '';
-//   String file = '';
-
-//   Contact(
-//       {required this.name,
-//       required this.nomor,
-//       required this.date,
-//       required this.color,
-//       required this.file});
-// }
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_test_alta1/app_screen/get_contact_bloc/model/contact_model.dart';
-import 'package:meta/meta.dart';
+ import 'package:meta/meta.dart';
 
 import '../model/contact_model.dart';
 

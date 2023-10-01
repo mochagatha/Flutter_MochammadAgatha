@@ -1,44 +1,35 @@
-validatingName(String name) {
-  if (name.trim().isEmpty) {
-    return "Name field Is Empty!";
-  } else if (name.split(" ").length < 2) {
-    return "Name must more than 2 word!";
-  } else if (isStringOnlyLetters(name) == false) {
-    return "Name must only contain letters!";
-  } else if (name.trim().split('')[0] !=
-      name.trim().split('')[0].toUpperCase()) {
-    return "Name must start with Uppercase!";
+    String? validateName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Nama wajib diisi';
+    }
+    List<String> words = value.split(' ');
+
+    for (String word in words) {
+      if (!RegExp(r'^[A-Z][a-zA-Z]*$').hasMatch(word)) {
+        return 'Nama boleh tidak mengandung angka atau karakter khusus.';
+      }
+    }
+    if (words.length < 2) {
+      return 'Nama harus terdiri dari minimal 2 kata';
+    }
+
+    return null;
   }
-  return null;
-}
+  String? validateNomor(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Nomor wajib diisi';
+    }
 
-bool isStringOnlyLetters(String str) {
-  return str.trim().isNotEmpty &&
-      str
-          .split(' ')
-          .join()
-          .split('')
-          .every((char) => RegExp(r'^[a-zA-Z]+$').hasMatch(char));
-}
+    if (value.length < 8) {
+      return 'Nomor harus terdiri dari minimal 8 angka';
+    }
 
-validatingNumber(String nmbr) {
-  final number = nmbr.split(' ').join().split('').join();
+    if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+      return 'Nomor hanya boleh angka';
+    }
+    if (!value.startsWith('0')) {
+      return 'Nomor harus diawali 0';
+    }
 
-  if (number.length < 8 || number.length > 15) {
-    return "Phone number length must minimum is 8 and maximum is 15!";
-  } else if (!isStringOnlyNumeric(nmbr)) {
-    return "Phone number must only contain number!";
-  } else if (!number.startsWith('0')) {
-    return "Phone number must start with 0!";
+    return null;
   }
-  return null;
-}
-
-bool isStringOnlyNumeric(String str) {
-  return str.trim().isNotEmpty &&
-      str
-          .split(' ')
-          .join()
-          .split('')
-          .every((char) => int.tryParse(char) != null);
-}

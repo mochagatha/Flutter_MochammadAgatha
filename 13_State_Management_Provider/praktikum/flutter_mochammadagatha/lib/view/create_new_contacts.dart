@@ -139,7 +139,8 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                     ),
                     onChanged: (value) {},
-                    validator: (value) => contactProvider.validateNomor(value)),
+                    validator: (value) => contactProvider.validateNomor(value)
+                    ),
               ],
             )
           ],
