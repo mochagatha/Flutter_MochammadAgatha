@@ -7,11 +7,10 @@ part 'contact_list_event.dart';
 part 'contact_list_state.dart';
 
 class ContactListBloc extends Bloc<ContactListEvent, ContactListState> {
-    bool isEditing = false;
+  bool isEditing = false;
   ContactListBloc() : super(ContactListState.empty()) {
     on<AddContactEvent>(
       (event, emit) {
-
         state.contactList.add(event.contact);
 
         emit(ContactListState(state.contactList));
@@ -30,6 +29,12 @@ class ContactListBloc extends Bloc<ContactListEvent, ContactListState> {
       (event, emit) {
         state.contactList[event.index] = event.contact;
 
+        emit(ContactListState(state.contactList));
+      },
+    );
+    on<CancelEditEvent>(
+      (event, emit) {
+        isEditing = false;
         emit(ContactListState(state.contactList));
       },
     );

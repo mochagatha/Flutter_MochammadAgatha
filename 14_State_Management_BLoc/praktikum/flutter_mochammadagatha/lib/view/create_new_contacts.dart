@@ -191,8 +191,9 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
           children: [
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    contactBloc.isEditing ? Colors.green : const Color(0xFF6750A4),
+                backgroundColor: contactBloc.isEditing
+                    ? Colors.green
+                    : const Color(0xFF6750A4),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50),
                 ),
@@ -244,12 +245,8 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
               child: Text(contactBloc.isEditing ? "Simpan" : "Submit"),
             ),
             const SizedBox(width: 5),
-               BlocConsumer<ContactListBloc, ContactListState>(
-      listener: (context, state) {},
-      builder: (context, state) {
-        return   Visibility(
-              visible: contactBloc.isEditing,
-              child: ElevatedButton(
+            if (contactBloc.isEditing)
+              ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(
@@ -257,7 +254,8 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
                   ),
                 ),
                 onPressed: () {
-                  // contactBloc.isEditing = false;
+                  //  contactBloc.add(CancelEditEvent());
+                  context.read<ContactListBloc>().add(CancelEditEvent());
                   editedName = '';
                   editedNomor = '';
                   nameController.clear();
@@ -267,9 +265,6 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
                 },
                 child: const Text("Batal"),
               ),
-            );
-      })
-         
           ],
         );
       },
@@ -313,8 +308,10 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(_truncateText(  contactBloc.state.contactList[index].name, 20),
-                            
+                            Text(
+                              _truncateText(
+                                  contactBloc.state.contactList[index].name,
+                                  20),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
@@ -392,7 +389,8 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
       },
     );
   }
-    String _truncateText(String text, int maxLength) {
+
+  String _truncateText(String text, int maxLength) {
     if (text.length <= maxLength) {
       return text;
     }

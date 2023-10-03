@@ -24,3 +24,6 @@ class ChangeContactEvent extends ContactListEvent {
 
   ChangeContactEvent(this.contact, this.index);
 }
+class CancelEditEvent extends ContactListEvent {
+
+}
