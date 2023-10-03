@@ -9,4 +9,5 @@ class ContactListState {
   const ContactListState(this.contactList);
 
   List<Object?> get props => [contactList];
+
 }
