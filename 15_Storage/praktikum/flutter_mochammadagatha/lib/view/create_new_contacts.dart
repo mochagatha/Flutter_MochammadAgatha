@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mochammadagatha/view/profile.dart';
@@ -279,12 +281,12 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _truncateText(data.name, 20),
+                              _truncateText(data.name, 15),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
                             Text(data.nomor),
-                            Text("Date: ${data.date}"),
+                            Text("Date: ${_truncateText(data.date, 15)}"),
                             Row(
                               children: [
                                 const Text("Color: "),
@@ -296,7 +298,7 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
                               ],
                             ),
                             Text(
-                              "File Name: ${_truncateText(data.file, 15)}",
+                              "File: ${_truncateText(data.file, 15)}",
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
@@ -319,52 +321,39 @@ class _CreateNewContactsState extends State<CreateNewContacts> {
                             );
                           },
                         ),
-                        Consumer<contact_store.ContactProvider>(
-                          builder: (context, contactProvider, child) {
-                            return
-                                // Hapus name & Nomor
-                                IconButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text("Hapus Kontak"),
-                                      content: const Text(
-                                          "Apakah Anda yakin ingin menghapus kontak ini?"),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          child: const Text("Tidak"),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                        Consumer<contact_store.ContactProvider>(
-                                          builder: (context, contactProvider,
-                                              child) {
-                                            return TextButton(
-                                              child: const Text("Ya"),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                                contactProvider
-                                                    .deleteContact(data.name);
-
-                                              },
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
+                        IconButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("Hapus Kontak"),
+                                  content: const Text(
+                                      "Apakah Anda yakin ingin menghapus kontak ini?"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text("Tidak"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text("Ya"),
+                                      onPressed: () {
+                                        contactProvider.deleteContact(data.id!);
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
                                 );
                               },
-                              icon: const Icon(
-                                Icons.delete,
-                                size: 24.0,
-                              ),
                             );
                           },
-                        ),
+                          icon: const Icon(
+                            Icons.delete,
+                            size: 24.0,
+                          ),
+                        )
                       ],
                     ),
                   ],

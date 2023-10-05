@@ -59,6 +59,7 @@ class DatabaseHelper {
 
     return List.generate(maps.length, (i) {
       return ModelContact(
+        id: maps[i]['id'],
         name: maps[i]['name'],
         nomor: maps[i]['nomor'],
         date: maps[i]['date'],
@@ -78,14 +79,12 @@ class DatabaseHelper {
     );
   }
 
- 
-    Future<void> deleteContact(String name)async {
-    final database = await this.database;
-
-    await database.delete(
+  Future<int> deleteContact(int id) async {
+    Database db = await database;
+    return await db.delete(
       'contacts',
-      where: 'name= ?',
-      whereArgs: [name],
+      where: 'id = ?',
+      whereArgs: [id],
     );
   }
 }

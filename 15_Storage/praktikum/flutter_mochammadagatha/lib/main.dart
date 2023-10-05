@@ -5,12 +5,9 @@ import 'package:flutter_mochammadagatha/view/create_new_contacts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_mochammadagatha/controller/contact.dart'
     as contact_store;
-// import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'controller/contact.dart';
 
 Future<void> main() async {
-  // sqfliteFfiInit();
-  // databaseFactory = databaseFactoryFfi;
   WidgetsFlutterBinding.ensureInitialized();
   final contactProvider = DatabaseHelper();
   await contactProvider.initDatabase();

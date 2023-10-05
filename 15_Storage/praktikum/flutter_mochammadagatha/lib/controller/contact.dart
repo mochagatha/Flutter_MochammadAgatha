@@ -23,7 +23,7 @@ class ContactProvider with ChangeNotifier {
   Future<void> fetchContacts() async {
     final contacts = await dbHelper.getContacts();
     _contacts.addAll(contacts);
-    notifyListeners();
+    _getAllContact();
   }
 
   void add(ModelContact contact) async {
@@ -35,7 +35,7 @@ class ContactProvider with ChangeNotifier {
     selectedFileName = "Pick Your File";
     filePath = null;
     dbHelper.insertContact(contact);
-   _getAllContact();
+    _getAllContact();
   }
 
   void editContact(ModelContact editedContact, String newName, String newNomor,
@@ -62,30 +62,15 @@ class ContactProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // void deleteContact(ModelContact contact) async {
-  //   await dbHelper.deleteContact(contact.id);
-  //   final contactIndex = _contacts.indexWhere((contact) => contact.id == id);
-  //   if (contactIndex != -1) {
-  //     _contacts.removeAt(contactIndex);
-  //   }
-
-  //   notifyListeners();
-  // }
   void _getAllContact() async {
     _contacts = await dbHelper.getContacts();
     notifyListeners();
   }
-  //   void deleteContact(int id) async {
-  //   await dbHelper.deleteContact(id);
-  //  _getAllContact();
-  // }
-  void deleteContact(String name) async {
-    await dbHelper.deleteContact(name);
-   _getAllContact();
+
+  void deleteContact(int id) async {
+    await dbHelper.deleteContact(id);
+    _getAllContact();
   }
-
-
-
 
   void setDueDate(DateTime newDueDate) {
     dueDate = newDueDate;

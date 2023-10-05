@@ -33,12 +33,6 @@ class _ProfileSheetState extends State<ProfileSheet> {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          const Center(
-            child: Icon(
-            Icons.developer_board,
-            size: 24.0,
-            ),
-          ),
           const CircleAvatar(
             radius: 50,
             backgroundImage: AssetImage('assets/melody.jpeg'),
