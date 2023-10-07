@@ -78,6 +78,8 @@ class _ContactScreenState extends State<ContactScreen> {
                             name: modelview.name.text,
                             job: modelview.job.text,
                           );
+                          modelview.updatePost();
+                          modelview.fetchDataJSON();
                         },
                         child: const Text('Submit')),
                   ],

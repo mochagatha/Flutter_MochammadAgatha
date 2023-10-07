@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-
 import 'contact_view_model.dart';
 
 class Prioritas2 extends StatelessWidget {

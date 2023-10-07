@@ -15,11 +15,6 @@ class BottomNavScreen extends StatefulWidget {
 // late ContactViewModel modelview;
 
 class _BottomNavScreenState extends State<BottomNavScreen> {
-  @override
-  // void initState() {
-  //   modelview = Provider.of<ContactViewModel>(context, listen: false);
-  //   super.initState();
-  // }
 
   @override
   Widget build(BuildContext context) {

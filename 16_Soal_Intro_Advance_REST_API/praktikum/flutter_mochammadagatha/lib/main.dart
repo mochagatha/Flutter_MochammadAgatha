@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'screen/contact/nav_bottom.dart';
 
 void main() {
-  // runApp(const MyApp());
     runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => ContactViewModel())
   ],
@@ -27,17 +26,4 @@ class MyApp extends StatelessWidget {
       home: const BottomNavScreen(),
     );
   }
-  // Widget build(BuildContext context) {
-  //   return MaterialApp(
-  //     theme: ThemeData(
-  //       brightness: Brightness.light,
-  //     ),
-  //     debugShowCheckedModeBanner: false,
-  //     routes: {
-  //       '/': (_) => const ContactScreen(),
-  //       // '/showImage': (_) => const showImage(),
-  //       // '/contacts': (_) => const GridviewScreen(),
-  //     },
-  //   );
-  // }
 }
