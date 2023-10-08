@@ -1,8 +1,8 @@
 // ignore_for_file: unnecessary_null_comparison
-
 import 'package:flutter/material.dart';
-import 'package:flutter_mochammadagatha/screen/contact/contact_view_model.dart';
 import 'package:provider/provider.dart';
+
+import '../view_model/contact_view_model.dart';
 
 class ContactScreen extends StatefulWidget {
   const ContactScreen({Key? key}) : super(key: key);
@@ -108,7 +108,6 @@ class _ContactScreenState extends State<ContactScreen> {
                           ? Text(
                               'CreatedAt: ${contactViewModel.responseData.createdAt}')
                           : const Text('CreatedAt:'),
-                          
                     ],
                   );
                 },

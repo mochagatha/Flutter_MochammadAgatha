@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mochammadagatha/screen/contact/contact_screen.dart';
-import 'package:flutter_mochammadagatha/screen/contact/generate_foto.dart';
-import 'package:flutter_mochammadagatha/screen/contact/image_screen.dart';
+import 'package:flutter_mochammadagatha/screen/view/contact_screen.dart';
+import 'package:flutter_mochammadagatha/screen/view/generate_foto.dart';
+import 'package:flutter_mochammadagatha/screen/view/image_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_mochammadagatha/screen/contact/contact_view_model.dart';
+import '../view_model/contact_view_model.dart';
 
 class BottomNavScreen extends StatefulWidget {
   const BottomNavScreen({Key? key}) : super(key: key);
@@ -12,22 +12,19 @@ class BottomNavScreen extends StatefulWidget {
   State<BottomNavScreen> createState() => _BottomNavScreenState();
 }
 
-// late ContactViewModel modelview;
-
 class _BottomNavScreenState extends State<BottomNavScreen> {
-
   @override
   Widget build(BuildContext context) {
     final modelview = Provider.of<ContactViewModel>(context);
     return Scaffold(
       body: Consumer<ContactViewModel>(
         builder: (context, contactModel, child) {
-          final List<Widget> _screens = [
+          final List<Widget> screens = [
             const ContactScreen(),
             const Prioritas2(),
             const GenerateFoto(),
           ];
-          return _screens[modelview.currentIndex];
+          return screens[modelview.currentIndex];
         },
       ),
       bottomNavigationBar: Consumer<ContactViewModel>(

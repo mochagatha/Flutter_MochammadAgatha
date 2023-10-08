@@ -1,6 +1,4 @@
-// import 'dart:convert';
-
-// import 'dart:convert';
+// ignore_for_file: avoid_print
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +14,6 @@ class ContactViewModel with ChangeNotifier {
   TextEditingController initial = TextEditingController();
   String hasilGenerateGambar = '';
   String getGambar = "";
-  
   final Dio _dio = Dio();
 
   Future addData({required String name, required String job}) async {
@@ -27,7 +24,7 @@ class ContactViewModel with ChangeNotifier {
         "createdAt": DateTime.now().toIso8601String()
       };
       Response user = await _dio.post(
-        Urls.baseURL + Urls.users,
+        Urls.baseURL,
         data: userData,
       );
       if (user.statusCode == 201) {
@@ -48,12 +45,10 @@ class ContactViewModel with ChangeNotifier {
 
   Future getImage() async {
     try {
-      String imageUrl = "https://api.dicebear.com/7.x/lorelei/svg";
-      Response respon = await _dio.get(imageUrl);
+      Response respon = await _dio.get(Urls.getImageUrl);
       if (respon.statusCode == 200) {
         print('Berhasil Mengambil foto Foto');
-        getGambar = imageUrl;
-        print("coba print: $imageUrl");
+        getGambar = Urls.getImageUrl;
       } else {
         print('Gagal mengirim data. Status code: ${respon.statusCode}');
       }
@@ -65,14 +60,11 @@ class ContactViewModel with ChangeNotifier {
 
   Future generateInitial({required String initial}) async {
     try {
-      String imageUrl =
-          "https://api.dicebear.com/7.x/initials/svg?seed=$initial";
+      String imageUrl = Urls.generateImageUrl + initial;
       Response respon = await _dio.get(imageUrl);
       if (respon.statusCode == 200) {
         print('Berhasil Create Foto');
-
         hasilGenerateGambar = imageUrl;
-        print("coba print: $imageUrl");
       } else {
         print('Gagal mengirim data. Status code: ${respon.statusCode}');
       }
@@ -92,7 +84,7 @@ class ContactViewModel with ChangeNotifier {
 
     try {
       Response response = await _dio.put(
-        'https://jsonplaceholder.typicode.com/posts/1',
+        Urls.putData,
         data: data,
         options: Options(
           headers: {
@@ -112,48 +104,26 @@ class ContactViewModel with ChangeNotifier {
     }
   }
 
-Future fetchDataJSON() async {
-  const String apiUrl = "https://my-json-server.typicode.com/hadihammurabi/flutter-webservice/contacts/2";
+  Future fetchDataJSON() async {
+    try {
+      final response = await _dio.get(Urls.fetchDataJSON);
 
-  try {
-    final response = await _dio.get(apiUrl);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = response.data;
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = response.data;
+        Contact contact = Contact.fromJson(data);
 
-      Contact contact = Contact.fromJson(data);
-
-      print('ID: ${contact.id}');
-      print('Name: ${contact.name}');
-      print('Phone: ${contact.phone}');
-    } else {
-      print('Failed to load data. Status code: ${response.statusCode}');
+        print('ID: ${contact.id}');
+        print('Name: ${contact.name}');
+        print('Phone: ${contact.phone}');
+      } else {
+        print('Failed to load data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('An error occurred: $e');
     }
-  } catch (e) {
-    print('An error occurred: $e');
   }
-}
-  // Future ubahJson() async {
-  // try {
-  //   final response = await _dio.get("https://my-json-server.typicode.com/hadihammurabi/flutter-webservice/contacts/2");
 
-  //   if (response.statusCode == 200) {
-  //     final Map<String, dynamic> data = json.decode(response.data);
-
-  //     contact = Contact.fromJson(data).toString();
-
-  //     print('ID: ${contact.id}');
-  //     print('Name: ${contact.name}');
-  //     print('Phone: ${contact.phone}');
-  //   } else {
-  //     print('Failed to load data. Status code: ${response.statusCode}');
-  //   }
-  // } catch (e) {
-  //   print('An error occurred: $e');
-  // }
-
-  //   notifyListeners();
-  // }
   void changeIndex(int newIndex) {
     currentIndex = newIndex;
     notifyListeners();

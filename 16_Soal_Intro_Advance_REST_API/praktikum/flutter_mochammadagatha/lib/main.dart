@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_mochammadagatha/screen/contact/contact_screen.dart';
-import 'package:flutter_mochammadagatha/screen/contact/contact_view_model.dart';
 import 'package:provider/provider.dart';
-
-import 'screen/contact/nav_bottom.dart';
+import 'screen/view/nav_bottom.dart';
+import 'screen/view_model/contact_view_model.dart';
 
 void main() {
     runApp(MultiProvider(providers: [
